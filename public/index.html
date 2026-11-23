@@ -1,0 +1,1833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pustak — Online Bookstore</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
+
+  <!-- Bootstrap 5.3 & Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+  <style>
+    :root {
+      --ink: #0d2328;
+      --ink-subtle: #17383f;
+      --saffron: #f2a516;
+      --saffron-hover: #db930e;
+      --paper: #f4f7f5;
+      --card-bg: #ffffff;
+      --line: #e2ebe6;
+      --text-muted: #5f7473;
+      --success-green: #15803d;
+      --danger-red: #b91c1c;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+      background-color: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1, h2, h3, h4, h5, .brand-font {
+      font-family: "Space Grotesk", sans-serif;
+    }
+
+    /* Navbar styling */
+    .pustak-nav {
+      background: var(--ink);
+      border-bottom: 2px solid rgba(242, 165, 22, 0.25);
+    }
+    .brand-logo {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.03em;
+      text-decoration: none;
+    }
+    .brand-logo span {
+      color: var(--saffron);
+    }
+    .nav-pill-btn {
+      color: #d1deda;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border-radius: 999px;
+      padding: 6px 14px;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+      background: transparent;
+    }
+    .nav-pill-btn:hover, .nav-pill-btn.active {
+      color: #ffffff;
+      background: var(--ink-subtle);
+      border-color: rgba(242, 165, 22, 0.4);
+    }
+    .cart-btn {
+      background: var(--saffron);
+      color: var(--ink);
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 8px 18px;
+      border: none;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+    .cart-btn:hover {
+      background: var(--saffron-hover);
+      transform: translateY(-1px);
+    }
+    .cart-badge {
+      background: var(--ink);
+      color: #fff;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 0.8rem;
+      margin-left: 6px;
+    }
+    .cart-btn.bump {
+      animation: cartBounce 0.35s ease;
+    }
+    @keyframes cartBounce {
+      40% { transform: scale(1.12); }
+    }
+
+    /* Hero Section */
+    .hero-banner {
+      background: linear-gradient(135deg, var(--ink) 0%, #153c42 100%);
+      color: #ffffff;
+      padding: 48px 0 36px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-badge {
+      background: rgba(242, 165, 22, 0.15);
+      border: 1px solid rgba(242, 165, 22, 0.4);
+      color: var(--saffron);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .hero-title {
+      font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-top: 14px;
+      margin-bottom: 14px;
+    }
+    .hero-lead {
+      color: #c9dbd7;
+      font-size: 1.05rem;
+      max-width: 540px;
+    }
+
+    /* Decorative Book Spines */
+    .shelf-display {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      justify-content: center;
+      padding-bottom: 4px;
+      border-bottom: 8px solid #09171a;
+    }
+    .spine-book {
+      width: 42px;
+      border-radius: 4px 4px 0 0;
+      writing-mode: vertical-rl;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 700;
+      font-size: 0.78rem;
+      color: #ffffff;
+      transition: transform 0.25s, box-shadow 0.25s;
+      cursor: pointer;
+      box-shadow: inset 4px 0 0 rgba(0,0,0,0.18);
+    }
+    .spine-book:hover {
+      transform: translateY(-12px) rotate(-2deg);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+
+    /* Category Themes */
+    .bg-Fiction { background: linear-gradient(150deg, #8b2c55, #4d1532); }
+    .bg-Biography { background: linear-gradient(150deg, #237263, #0f3932); }
+    .bg-History { background: linear-gradient(150deg, #a4641c, #58330a); }
+    .bg-Technology { background: linear-gradient(150deg, #254db1, #13275c); }
+    .bg-Science { background: linear-gradient(150deg, #0284c7, #034870); }
+    .bg-Philosophy { background: linear-gradient(150deg, #6d28d9, #3c1477); }
+    .bg-General { background: linear-gradient(150deg, #374151, #1f2937); }
+
+    /* Book Cards */
+    .book-card {
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
+    }
+    .book-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 28px -8px rgba(13, 35, 40, 0.12);
+      border-color: #cbdad3;
+    }
+    .book-cover {
+      aspect-ratio: 2 / 2.8;
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: #ffffff;
+      position: relative;
+      box-shadow: inset 8px 0 0 rgba(0,0,0,0.22), 0 8px 16px -6px rgba(0,0,0,0.25);
+      cursor: pointer;
+    }
+    .book-cover .title {
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 700;
+      font-size: 1.25rem;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+    .book-cover .author {
+      font-size: 0.82rem;
+      opacity: 0.9;
+    }
+    .rating-badge {
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: rgba(242, 165, 22, 0.16);
+      color: #925805;
+      padding: 2px 7px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .price-tag {
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--ink);
+    }
+
+    /* Filter Chips */
+    .filter-chip {
+      border: 1.5px solid var(--line);
+      background: #ffffff;
+      color: var(--ink);
+      font-weight: 600;
+      font-size: 0.86rem;
+      padding: 6px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .filter-chip:hover {
+      border-color: var(--ink);
+    }
+    .filter-chip.active {
+      background: var(--ink);
+      color: #ffffff;
+      border-color: var(--ink);
+    }
+
+    /* Validation indicator styles */
+    .form-control.is-valid, .form-select.is-valid {
+      border-color: var(--success-green);
+      background-image: none;
+    }
+    .form-control.is-invalid, .form-select.is-invalid {
+      border-color: var(--danger-red);
+      background-image: none;
+    }
+
+    /* Timeline in Track Order */
+    .track-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      flex: 1;
+    }
+    .track-step:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      width: 100%;
+      height: 3px;
+      background: var(--line);
+      z-index: 1;
+    }
+    .track-step.done:not(:last-child)::after {
+      background: var(--success-green);
+    }
+    .track-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 3px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      z-index: 2;
+    }
+    .track-step.done .track-circle {
+      background: var(--success-green);
+      border-color: var(--success-green);
+      color: #ffffff;
+    }
+    .track-step.active .track-circle {
+      border-color: var(--saffron);
+      color: var(--saffron);
+      box-shadow: 0 0 0 4px rgba(242, 165, 22, 0.2);
+    }
+
+    /* Toast Notification */
+    .pustak-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 1100;
+      background: var(--ink);
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      border-left: 4px solid var(--saffron);
+      animation: slideUpToast 0.25s ease-out;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    @keyframes slideUpToast {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Print styles */
+    @media print {
+      body * { visibility: hidden; }
+      #printable-receipt, #printable-receipt * { visibility: visible; }
+      #printable-receipt { position: absolute; left: 0; top: 0; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React 18, React-DOM, Babel -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
+  <!-- Bootstrap 5 Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- React Application Source -->
+  <script type="text/babel">
+    const { useState, useEffect, useReducer, useMemo, useCallback } = React;
+
+    // Helper: Indian Rupee Formatter
+    const formatINR = (val) => "₹" + Number(val || 0).toLocaleString("en-IN");
+
+    // Client-side Validation Rules
+    const CLIENT_RULES = {
+      name: (v) => (!v ? "Full name is required." : !/^[A-Za-z][A-Za-z .'-]{1,59}$/.test(v) ? "2–60 letters; spaces, . ' - allowed." : ""),
+      email: (v) => (!v ? "Email is required." : !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) ? "Enter a valid email like name@example.com." : ""),
+      phone: (v) => (!v ? "Mobile number is required." : !/^[6-9]\d{9}$/.test(v) ? "10-digit Indian mobile starting with 6–9." : ""),
+      address: (v) => (!v ? "Delivery address is required." : v.length < 10 ? "Address must be at least 10 characters." : ""),
+      pin: (v) => (!v ? "PIN code is required." : !/^[1-9]\d{5}$/.test(v) ? "Enter a valid 6-digit PIN code." : ""),
+      payment: (v) => (!v ? "Please select a payment method." : "")
+    };
+
+    // Cart Reducer
+    function cartReducer(state, action) {
+      switch (action.type) {
+        case "ADD_ITEM": {
+          const exists = state.find((i) => i.id === action.book.id);
+          if (exists) {
+            return state.map((i) =>
+              i.id === exists.id ? { ...i, qty: Math.min(10, i.qty + 1) } : i
+            );
+          }
+          return [...state, { ...action.book, qty: 1 }];
+        }
+        case "INCREMENT":
+          return state.map((i) =>
+            i.id === action.id ? { ...i, qty: Math.min(10, i.qty + 1) } : i
+          );
+        case "DECREMENT":
+          return state.flatMap((i) =>
+            i.id !== action.id ? [i] : i.qty > 1 ? [{ ...i, qty: i.qty - 1 }] : []
+          );
+        case "REMOVE":
+          return state.filter((i) => i.id !== action.id);
+        case "CLEAR":
+          return [];
+        default:
+          return state;
+      }
+    }
+
+    // =========================================================================
+    // MAIN APP COMPONENT
+    // =========================================================================
+    function PustakApp() {
+      // Navigation tab: "shelf" | "track" | "admin"
+      const [activeTab, setActiveTab] = useState("shelf");
+
+      // Book catalog state
+      const [books, setBooks] = useState([]);
+      const [loadingBooks, setLoadingBooks] = useState(false);
+      const [searchQuery, setSearchQuery] = useState("");
+      const [selectedCategory, setSelectedCategory] = useState("All");
+      const [sortBy, setSortBy] = useState("default");
+      const [categories, setCategories] = useState(["All", "Fiction", "Biography", "History", "Technology"]);
+
+      // Cart state (useReducer)
+      const [cart, dispatchCart] = useReducer(cartReducer, []);
+      const [isCartOpen, setIsCartOpen] = useState(false);
+      const [cartBump, setCartBump] = useState(false);
+      const [couponCode, setCouponCode] = useState("");
+      const [couponApplied, setCouponApplied] = useState(false);
+
+      // Modals
+      const [selectedBookForModal, setSelectedBookForModal] = useState(null);
+      const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+      const [confirmedOrder, setConfirmedOrder] = useState(null);
+
+      // Toast feedback
+      const [toastMsg, setToastMsg] = useState(null);
+
+      const showToast = (msg, icon = "bi-check-circle-fill") => {
+        setToastMsg({ text: msg, icon });
+        setTimeout(() => setToastMsg(null), 3200);
+      };
+
+      // Fetch books from REST API
+      const fetchBooks = useCallback(async () => {
+        setLoadingBooks(true);
+        try {
+          const res = await fetch(`/api/books?search=${encodeURIComponent(searchQuery)}&category=${encodeURIComponent(selectedCategory)}&sort=${sortBy}`);
+          const data = await res.json();
+          if (data.success) {
+            setBooks(data.books);
+            if (data.categories && data.categories.length) {
+              setCategories(["All", ...data.categories]);
+            }
+          }
+        } catch (err) {
+          console.error("Failed to load books:", err);
+          showToast("Could not connect to book service.", "bi-exclamation-triangle-fill");
+        }
+        setLoadingBooks(false);
+      }, [searchQuery, selectedCategory, sortBy]);
+
+      useEffect(() => {
+        const timer = setTimeout(() => {
+          fetchBooks();
+        }, 200);
+        return () => clearTimeout(timer);
+      }, [fetchBooks]);
+
+      // Cart Calculations
+      const cartCount = useMemo(() => cart.reduce((acc, it) => acc + it.qty, 0), [cart]);
+      const subtotal = useMemo(() => cart.reduce((acc, it) => acc + it.price * it.qty, 0), [cart]);
+      const discount = useMemo(() => (couponApplied ? Math.round(subtotal * 0.1) : 0), [subtotal, couponApplied]);
+      const shipping = useMemo(() => {
+        if (subtotal === 0) return 0;
+        return (subtotal - discount) >= 500 ? 0 : 50;
+      }, [subtotal, discount]);
+      const grandTotal = useMemo(() => Math.max(0, subtotal - discount + shipping), [subtotal, discount, shipping]);
+
+      // Add to cart helper
+      const handleAddToCart = (book) => {
+        dispatchCart({ type: "ADD_ITEM", book });
+        setCartBump(true);
+        setTimeout(() => setCartBump(false), 350);
+        showToast(`Added "${book.title}" to cart`);
+      };
+
+      return (
+        <div>
+          {/* Header Navbar */}
+          <header className="pustak-nav sticky-top py-2 px-3 shadow-sm">
+            <div className="container-fluid d-flex align-items-center justify-content-between flex-wrap gap-2">
+              <a href="#" className="brand-logo d-flex align-items-center gap-2" onClick={(e) => { e.preventDefault(); setActiveTab("shelf"); }}>
+                <i className="bi bi-book-half" style={{ color: "var(--saffron)" }}></i>
+                <span>Pustak<span>.</span></span>
+              </a>
+
+              {/* Navigation Tabs */}
+              <nav className="d-flex align-items-center gap-1">
+                <button
+                  className={`nav-pill-btn ${activeTab === "shelf" ? "active" : ""}`}
+                  onClick={() => setActiveTab("shelf")}
+                >
+                  <i className="bi bi-grid me-1"></i> Catalog
+                </button>
+                <button
+                  className={`nav-pill-btn ${activeTab === "track" ? "active" : ""}`}
+                  onClick={() => setActiveTab("track")}
+                >
+                  <i className="bi bi-geo-alt me-1"></i> Track Order
+                </button>
+                <button
+                  className={`nav-pill-btn ${activeTab === "admin" ? "active" : ""}`}
+                  onClick={() => setActiveTab("admin")}
+                >
+                  <i className="bi bi-box-seam me-1"></i> Inventory
+                </button>
+              </nav>
+
+              {/* Cart Button */}
+              <button
+                className={`cart-btn d-flex align-items-center ${cartBump ? "bump" : ""}`}
+                onClick={() => setIsCartOpen(true)}
+                aria-label={`Open shopping cart with ${cartCount} items`}
+              >
+                <i className="bi bi-bag-fill me-1"></i>
+                <span>Cart</span>
+                <span className="cart-badge">{cartCount}</span>
+              </button>
+            </div>
+          </header>
+
+          {/* MAIN TAB SWITCHER */}
+          {activeTab === "shelf" && (
+            <>
+              {/* Hero Banner */}
+              <section className="hero-banner">
+                <div className="container">
+                  <div className="row align-items-center g-4">
+                    <div className="col-lg-7">
+                      <div className="hero-badge">
+                        <i className="bi bi-stars"></i> Online Bookstore &bull; Handpicked Editions
+                      </div>
+                      <h1 className="hero-title">Books worth carrying home.</h1>
+                      <p className="hero-lead">
+                        Curated Indian literature, programming classics, and timeless non-fiction.
+                        Delivered across India with fast shipping and secure checkout.
+                      </p>
+                      <div className="d-flex gap-2 mt-4 flex-wrap">
+                        <a href="#catalog-section" className="btn btn-warning fw-bold px-4 py-2 rounded-pill">
+                          <i className="bi bi-search me-1"></i> Browse Books
+                        </a>
+                        <button
+                          className="btn btn-outline-light px-4 py-2 rounded-pill"
+                          onClick={() => setActiveTab("admin")}
+                        >
+                          <i className="bi bi-box-seam me-1"></i> Manage Inventory
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Stylized Book Spines on Shelf */}
+                    <div className="col-lg-5 d-none d-lg-block">
+                      <div className="shelf-display">
+                        <div className="spine-book bg-Fiction" style={{ height: "185px" }}>Fiction</div>
+                        <div className="spine-book bg-Technology" style={{ height: "220px" }}>Tech Classics</div>
+                        <div className="spine-book bg-History" style={{ height: "160px" }}>History</div>
+                        <div className="spine-book bg-Biography" style={{ height: "195px" }}>Biography</div>
+                        <div className="spine-book bg-Fiction" style={{ height: "230px" }}>Mythology</div>
+                        <div className="spine-book bg-Technology" style={{ height: "175px" }}>Code Arts</div>
+                        <div className="spine-book bg-History" style={{ height: "210px" }}>Sapiens</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Filter and Catalog Section */}
+              <main id="catalog-section" className="container py-4 flex-grow-1">
+                {/* Search & Sort Controls */}
+                <div className="card shadow-sm border-0 mb-4 p-3 bg-white rounded-4">
+                  <div className="row g-3 align-items-center">
+                    <div className="col-md-5">
+                      <div className="input-group">
+                        <span className="input-group-text bg-white border-end-0">
+                          <i className="bi bi-search text-muted"></i>
+                        </span>
+                        <input
+                          type="text"
+                          className="form-control border-start-0 ps-0"
+                          placeholder="Search by title, author, or keywords..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                        {searchQuery && (
+                          <button
+                            className="btn btn-outline-secondary border-start-0"
+                            onClick={() => setSearchQuery("")}
+                            type="button"
+                          >
+                            <i className="bi bi-x-lg"></i>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Sort Dropdown */}
+                    <div className="col-md-3">
+                      <div className="d-flex align-items-center gap-2">
+                        <label className="text-muted small fw-semibold text-nowrap">Sort By:</label>
+                        <select
+                          className="form-select form-select-sm"
+                          value={sortBy}
+                          onChange={(e) => setSortBy(e.target.value)}
+                        >
+                          <option value="default">Featured</option>
+                          <option value="price-asc">Price: Low to High</option>
+                          <option value="price-desc">Price: High to Low</option>
+                          <option value="rating">Highest Rated</option>
+                          <option value="title">Title: A &ndash; Z</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="col-md-4 text-md-end text-muted small">
+                      {loadingBooks ? (
+                        <span><span className="spinner-border spinner-border-sm me-1"></span> Loading catalog...</span>
+                      ) : (
+                        <span>Showing <strong>{books.length}</strong> available books</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Category Chips */}
+                  <div className="d-flex gap-2 flex-wrap mt-3 pt-3 border-top">
+                    {categories.map((cat) => (
+                      <button
+                        key={cat}
+                        className={`filter-chip ${selectedCategory === cat ? "active" : ""}`}
+                        onClick={() => setSelectedCategory(cat)}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Books Grid */}
+                {books.length === 0 && !loadingBooks ? (
+                  <div className="text-center py-5">
+                    <i className="bi bi-book text-muted" style={{ fontSize: "3rem" }}></i>
+                    <h5 className="mt-3 text-muted">No books found matching your filter</h5>
+                    <button
+                      className="btn btn-sm btn-outline-dark mt-2 rounded-pill"
+                      onClick={() => { setSearchQuery(""); setSelectedCategory("All"); }}
+                    >
+                      Reset All Filters
+                    </button>
+                  </div>
+                ) : (
+                  <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+                    {books.map((book) => (
+                      <div className="col" key={book.id}>
+                        <div className="book-card">
+                          {/* Visual Cover */}
+                          <div
+                            className={`book-cover bg-${book.category || "General"}`}
+                            onClick={() => setSelectedBookForModal(book)}
+                            title="Click to view details"
+                          >
+                            <div>
+                              <span className="badge bg-dark bg-opacity-50 text-white mb-2 font-monospace">
+                                {book.category}
+                              </span>
+                              <div className="title">{book.title}</div>
+                            </div>
+                            <div className="author">by {book.author}</div>
+                          </div>
+
+                          {/* Info Footer */}
+                          <div className="mt-3 d-flex flex-column gap-2 flex-grow-1 justify-content-between">
+                            <div className="d-flex align-items-center justify-content-between">
+                              <span className="rating-badge">
+                                <i className="bi bi-star-fill text-warning"></i>
+                                {book.rating || 4.5}
+                              </span>
+                              <span className="badge text-bg-light text-muted border">
+                                {book.stock > 0 ? `${book.stock} in stock` : "Out of stock"}
+                              </span>
+                            </div>
+
+                            <div className="d-flex align-items-center justify-content-between pt-2 border-top">
+                              <div className="price-tag">{formatINR(book.price)}</div>
+                              <div className="d-flex gap-1">
+                                <button
+                                  className="btn btn-sm btn-outline-secondary rounded-pill"
+                                  onClick={() => setSelectedBookForModal(book)}
+                                  title="Quick View"
+                                >
+                                  <i className="bi bi-eye"></i>
+                                </button>
+                                <button
+                                  className="btn btn-sm btn-warning rounded-pill px-3 fw-bold"
+                                  onClick={() => handleAddToCart(book)}
+                                  disabled={book.stock <= 0}
+                                >
+                                  <i className="bi bi-cart-plus me-1"></i> Add
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </main>
+            </>
+          )}
+
+          {/* TRACK ORDER TAB */}
+          {activeTab === "track" && (
+            <main className="container py-4 flex-grow-1">
+              <TrackOrderView onSelectBook={(b) => setSelectedBookForModal(b)} />
+            </main>
+          )}
+
+          {/* ADMIN INVENTORY TAB */}
+          {activeTab === "admin" && (
+            <main className="container py-4 flex-grow-1">
+              <AdminInventoryView
+                books={books}
+                onRefresh={fetchBooks}
+                showToast={showToast}
+              />
+            </main>
+          )}
+
+          {/* FOOTER */}
+          <footer className="mt-auto py-4 bg-white border-top text-center text-muted small">
+            <div className="container">
+              <div className="row align-items-center">
+                <div className="col-md-6 text-md-start mb-2 mb-md-0">
+                  <strong>Pustak</strong> &bull; Online Bookstore &copy; {new Date().getFullYear()}
+                </div>
+                <div className="col-md-6 text-md-end">
+                  <span>Delivering inspiring books and literature across India</span>
+                </div>
+              </div>
+            </div>
+          </footer>
+
+          {/* OFFCANVAS CART DRAWER */}
+          <CartOffcanvas
+            isOpen={isCartOpen}
+            onClose={() => setIsCartOpen(false)}
+            cart={cart}
+            subtotal={subtotal}
+            discount={discount}
+            shipping={shipping}
+            grandTotal={grandTotal}
+            couponCode={couponCode}
+            setCouponCode={setCouponCode}
+            couponApplied={couponApplied}
+            setCouponApplied={setCouponApplied}
+            dispatchCart={dispatchCart}
+            onProceedCheckout={() => {
+              setIsCartOpen(false);
+              setIsCheckoutOpen(true);
+            }}
+          />
+
+          {/* CHECKOUT MODAL */}
+          {isCheckoutOpen && (
+            <CheckoutModal
+              cart={cart}
+              subtotal={subtotal}
+              discount={discount}
+              shipping={shipping}
+              grandTotal={grandTotal}
+              couponCode={couponApplied ? couponCode : ""}
+              onClose={() => setIsCheckoutOpen(false)}
+              onSuccess={(order) => {
+                dispatchCart({ type: "CLEAR" });
+                setIsCheckoutOpen(false);
+                setConfirmedOrder(order);
+                showToast(`Order #${order.orderId} placed successfully!`);
+              }}
+            />
+          )}
+
+          {/* ORDER RECEIPT MODAL */}
+          {confirmedOrder && (
+            <OrderReceiptModal
+              order={confirmedOrder}
+              onClose={() => setConfirmedOrder(null)}
+            />
+          )}
+
+          {/* BOOK DETAIL MODAL */}
+          {selectedBookForModal && (
+            <BookDetailModal
+              book={selectedBookForModal}
+              onClose={() => setSelectedBookForModal(null)}
+              onAddToCart={(b) => {
+                handleAddToCart(b);
+                setSelectedBookForModal(null);
+              }}
+            />
+          )}
+
+          {/* TOAST FEEDBACK */}
+          {toastMsg && (
+            <div className="pustak-toast" role="status">
+              <i className={`bi ${toastMsg.icon} text-warning fs-5`}></i>
+              <span>{toastMsg.text}</span>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // =========================================================================
+    // CART OFFCANVAS COMPONENT
+    // =========================================================================
+    function CartOffcanvas({
+      isOpen, onClose, cart, subtotal, discount, shipping, grandTotal,
+      couponCode, setCouponCode, couponApplied, setCouponApplied,
+      dispatchCart, onProceedCheckout
+    }) {
+      const handleApplyCoupon = (e) => {
+        e.preventDefault();
+        if (couponCode.trim().toUpperCase() === "PUSTAK10") {
+          setCouponApplied(true);
+        } else {
+          alert("Invalid code. Use promo code 'PUSTAK10' for 10% off!");
+        }
+      };
+
+      return (
+        <>
+          {isOpen && <div className="modal-backdrop fade show" onClick={onClose} style={{ zIndex: 1040 }}></div>}
+          <div
+            className={`offcanvas offcanvas-end ${isOpen ? "show" : ""}`}
+            tabIndex="-1"
+            style={{ visibility: isOpen ? "visible" : "hidden", zIndex: 1050, width: "420px" }}
+          >
+            <div className="offcanvas-header border-bottom">
+              <h5 className="offcanvas-title brand-font fw-bold">
+                <i className="bi bi-bag-check me-2 text-warning"></i>
+                Your Shopping Cart ({cart.reduce((s, i) => s + i.qty, 0)})
+              </h5>
+              <button type="button" className="btn-close" onClick={onClose}></button>
+            </div>
+
+            <div className="offcanvas-body d-flex flex-column">
+              {cart.length === 0 ? (
+                <div className="text-center my-auto py-5 text-muted">
+                  <i className="bi bi-cart-x fs-1 text-secondary"></i>
+                  <h6 className="mt-3">Your cart is empty</h6>
+                  <p className="small">Browse books on the shelf to get started.</p>
+                  <button className="btn btn-warning btn-sm rounded-pill px-4 mt-2" onClick={onClose}>
+                    Explore Books
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="flex-grow-1 overflow-auto pe-1">
+                    {cart.map((item) => (
+                      <div key={item.id} className="d-flex align-items-center gap-3 py-3 border-bottom">
+                        <div
+                          className={`rounded-2 bg-${item.category || "General"} flex-shrink-0`}
+                          style={{ width: "45px", height: "65px", boxShadow: "inset 3px 0 0 rgba(0,0,0,0.2)" }}
+                        ></div>
+                        <div className="flex-grow-1 min-w-0">
+                          <h6 className="mb-0 text-truncate fw-bold">{item.title}</h6>
+                          <div className="small text-muted">{formatINR(item.price)} each</div>
+                          <button
+                            className="btn btn-link text-danger p-0 small text-decoration-none mt-1"
+                            onClick={() => dispatchCart({ type: "REMOVE", id: item.id })}
+                          >
+                            <i className="bi bi-trash3 me-1"></i> Remove
+                          </button>
+                        </div>
+                        <div className="d-flex align-items-center border rounded-pill px-2 py-1">
+                          <button
+                            className="btn btn-sm btn-link p-0 text-dark"
+                            onClick={() => dispatchCart({ type: "DECREMENT", id: item.id })}
+                            aria-label="Decrease quantity"
+                          >
+                            <i className="bi bi-dash"></i>
+                          </button>
+                          <span className="mx-2 fw-bold small">{item.qty}</span>
+                          <button
+                            className="btn btn-sm btn-link p-0 text-dark"
+                            onClick={() => dispatchCart({ type: "INCREMENT", id: item.id })}
+                            aria-label="Increase quantity"
+                            disabled={item.qty >= 10}
+                          >
+                            <i className="bi bi-plus"></i>
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Coupon & Totals Section */}
+                  <div className="pt-3 border-top mt-auto">
+                    {/* Promo Code Input */}
+                    <form onSubmit={handleApplyCoupon} className="input-group input-group-sm mb-3">
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Coupon (use PUSTAK10)"
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value)}
+                        disabled={couponApplied}
+                      />
+                      {couponApplied ? (
+                        <button
+                          type="button"
+                          className="btn btn-outline-danger"
+                          onClick={() => { setCouponApplied(false); setCouponCode(""); }}
+                        >
+                          Remove
+                        </button>
+                      ) : (
+                        <button className="btn btn-outline-dark" type="submit">
+                          Apply
+                        </button>
+                      )}
+                    </form>
+
+                    {couponApplied && (
+                      <div className="alert alert-success py-1 px-2 small mb-2 d-flex align-items-center justify-content-between">
+                        <span><i className="bi bi-tag-fill me-1"></i> Code PUSTAK10 applied (10% OFF)</span>
+                        <span className="fw-bold">-{formatINR(discount)}</span>
+                      </div>
+                    )}
+
+                    {/* Breakdown */}
+                    <div className="d-flex justify-content-between text-muted small mb-1">
+                      <span>Subtotal:</span>
+                      <span>{formatINR(subtotal)}</span>
+                    </div>
+                    {couponApplied && (
+                      <div className="d-flex justify-content-between text-success small mb-1">
+                        <span>Coupon Discount:</span>
+                        <span>-{formatINR(discount)}</span>
+                      </div>
+                    )}
+                    <div className="d-flex justify-content-between text-muted small mb-1">
+                      <span>Delivery Shipping:</span>
+                      <span>{shipping === 0 ? <strong className="text-success">FREE</strong> : formatINR(shipping)}</span>
+                    </div>
+                    {shipping > 0 && (
+                      <div className="text-muted extra-small mb-2" style={{ fontSize: "0.75rem" }}>
+                        Tip: Orders above ₹500 qualify for FREE shipping!
+                      </div>
+                    )}
+                    <div className="d-flex justify-content-between align-items-center py-2 border-top fw-bold fs-5">
+                      <span>Total:</span>
+                      <span className="text-dark brand-font">{formatINR(grandTotal)}</span>
+                    </div>
+
+                    <button
+                      className="btn btn-warning w-100 py-2 rounded-pill fw-bold mt-2"
+                      onClick={onProceedCheckout}
+                    >
+                      Proceed to Checkout <i className="bi bi-arrow-right ms-1"></i>
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </>
+      );
+    }
+
+    // =========================================================================
+    // CHECKOUT MODAL COMPONENT
+    // =========================================================================
+    function CheckoutModal({ cart, subtotal, discount, shipping, grandTotal, couponCode, onClose, onSuccess }) {
+      const [form, setForm] = useState({
+        name: "",
+        email: "",
+        phone: "",
+        address: "",
+        pin: "",
+        payment: "upi"
+      });
+      const [errors, setErrors] = useState({});
+      const [touched, setTouched] = useState({});
+      const [serverAlert, setServerAlert] = useState(null);
+      const [isSubmitting, setIsSubmitting] = useState(false);
+
+      const handleChange = (e) => {
+        const { name, value } = e.target;
+        setForm((prev) => ({ ...prev, [name]: value }));
+        if (touched[name]) {
+          const rule = CLIENT_RULES[name];
+          if (rule) {
+            setErrors((prev) => ({ ...prev, [name]: rule(value.trim()) }));
+          }
+        }
+      };
+
+      const handleBlur = (e) => {
+        const { name, value } = e.target;
+        setTouched((prev) => ({ ...prev, [name]: true }));
+        const rule = CLIENT_RULES[name];
+        if (rule) {
+          setErrors((prev) => ({ ...prev, [name]: rule(value.trim()) }));
+        }
+      };
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        setServerAlert(null);
+
+        const newErrors = {};
+        Object.keys(CLIENT_RULES).forEach((key) => {
+          const msg = CLIENT_RULES[key](form[key].trim());
+          if (msg) newErrors[key] = msg;
+        });
+
+        if (Object.keys(newErrors).length > 0) {
+          setErrors(newErrors);
+          setTouched(Object.keys(CLIENT_RULES).reduce((acc, k) => ({ ...acc, [k]: true }), {}));
+          setServerAlert({ type: "danger", message: "Please resolve the highlighted fields before placing your order." });
+          return;
+        }
+
+        setIsSubmitting(true);
+        try {
+          const payload = {
+            ...form,
+            coupon: couponCode,
+            items: cart.map(({ id, qty }) => ({ id, qty })),
+          };
+
+          const res = await fetch("/api/checkout", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+
+          if (res.ok && data.success) {
+            onSuccess(data.order);
+          } else {
+            setErrors(data.errors || {});
+            setServerAlert({
+              type: "danger",
+              message: data.message || "Server rejected the order. Please review inputs.",
+            });
+          }
+        } catch (err) {
+          setServerAlert({
+            type: "danger",
+            message: "Network error: Could not contact server. Please verify backend is running.",
+          });
+        }
+        setIsSubmitting(false);
+      };
+
+      return (
+        <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.6)", zIndex: 1060 }}>
+          <div className="modal-dialog modal-dialog-centered modal-lg">
+            <div className="modal-content border-0 shadow rounded-4">
+              <div className="modal-header border-bottom">
+                <h5 className="modal-title brand-font fw-bold">
+                  <i className="bi bi-shield-check me-2 text-warning"></i>
+                  Checkout &amp; Delivery Details
+                </h5>
+                <button type="button" className="btn-close" onClick={onClose}></button>
+              </div>
+
+              <div className="modal-body p-4">
+                {serverAlert && (
+                  <div className={`alert alert-${serverAlert.type} alert-dismissible fade show`} role="alert">
+                    <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                    {serverAlert.message}
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit} noValidate>
+                  <div className="row g-3">
+                    {/* Full Name */}
+                    <div className="col-md-6">
+                      <label className="form-label small fw-semibold">Full Name *</label>
+                      <input
+                        type="text"
+                        name="name"
+                        className={`form-control ${touched.name ? (errors.name ? "is-invalid" : "is-valid") : ""}`}
+                        placeholder="e.g. Ritkriti Singh"
+                        value={form.name}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+                      {errors.name && <div className="invalid-feedback">{errors.name}</div>}
+                    </div>
+
+                    {/* Email */}
+                    <div className="col-md-6">
+                      <label className="form-label small fw-semibold">Email Address *</label>
+                      <input
+                        type="email"
+                        name="email"
+                        className={`form-control ${touched.email ? (errors.email ? "is-invalid" : "is-valid") : ""}`}
+                        placeholder="name@example.com"
+                        value={form.email}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+                      {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+                    </div>
+
+                    {/* Mobile Phone */}
+                    <div className="col-md-6">
+                      <label className="form-label small fw-semibold">Mobile Number (10 Digits) *</label>
+                      <div className="input-group">
+                        <span className="input-group-text small">+91</span>
+                        <input
+                          type="text"
+                          name="phone"
+                          maxLength="10"
+                          className={`form-control ${touched.phone ? (errors.phone ? "is-invalid" : "is-valid") : ""}`}
+                          placeholder="9876543210"
+                          value={form.phone}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                        />
+                        {errors.phone && <div className="invalid-feedback d-block">{errors.phone}</div>}
+                      </div>
+                    </div>
+
+                    {/* Postal PIN Code */}
+                    <div className="col-md-6">
+                      <label className="form-label small fw-semibold">PIN Code (6 Digits) *</label>
+                      <input
+                        type="text"
+                        name="pin"
+                        maxLength="6"
+                        className={`form-control ${touched.pin ? (errors.pin ? "is-invalid" : "is-valid") : ""}`}
+                        placeholder="411001"
+                        value={form.pin}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+                      {errors.pin && <div className="invalid-feedback">{errors.pin}</div>}
+                    </div>
+
+                    {/* Delivery Address */}
+                    <div className="col-12">
+                      <label className="form-label small fw-semibold">Delivery Address (House/Street/Area) *</label>
+                      <textarea
+                        name="address"
+                        rows="2"
+                        className={`form-control ${touched.address ? (errors.address ? "is-invalid" : "is-valid") : ""}`}
+                        placeholder="Street Address, Landmark, City (min 10 characters)"
+                        value={form.address}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      ></textarea>
+                      {errors.address && <div className="invalid-feedback">{errors.address}</div>}
+                    </div>
+
+                    {/* Payment Method */}
+                    <div className="col-md-12">
+                      <label className="form-label small fw-semibold">Payment Option *</label>
+                      <div className="d-flex gap-3 flex-wrap">
+                        <div className="form-check">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="payment"
+                            id="pay-upi"
+                            value="upi"
+                            checked={form.payment === "upi"}
+                            onChange={handleChange}
+                          />
+                          <label className="form-check-label" htmlFor="pay-upi">
+                            <i className="bi bi-qr-code-scan me-1 text-primary"></i> UPI (GPay / PhonePe / Paytm)
+                          </label>
+                        </div>
+                        <div className="form-check">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="payment"
+                            id="pay-card"
+                            value="card"
+                            checked={form.payment === "card"}
+                            onChange={handleChange}
+                          />
+                          <label className="form-check-label" htmlFor="pay-card">
+                            <i className="bi bi-credit-card me-1 text-success"></i> Credit / Debit Card
+                          </label>
+                        </div>
+                        <div className="form-check">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="payment"
+                            id="pay-cod"
+                            value="cod"
+                            checked={form.payment === "cod"}
+                            onChange={handleChange}
+                          />
+                          <label className="form-check-label" htmlFor="pay-cod">
+                            <i className="bi bi-cash-stack me-1 text-warning"></i> Cash on Delivery
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Summary Box */}
+                  <div className="bg-light p-3 rounded-3 mt-4 border d-flex justify-content-between align-items-center">
+                    <div>
+                      <span className="text-muted small">Items in Cart: {cart.length}</span>
+                      <div className="fw-bold fs-5 text-dark brand-font">Payable: {formatINR(grandTotal)}</div>
+                    </div>
+                    <div className="d-flex gap-2">
+                      <button type="button" className="btn btn-outline-secondary rounded-pill px-3" onClick={onClose}>
+                        Cancel
+                      </button>
+                      <button type="submit" className="btn btn-warning rounded-pill px-4 fw-bold" disabled={isSubmitting}>
+                        {isSubmitting ? (
+                          <>
+                            <span className="spinner-border spinner-border-sm me-2"></span>
+                            Authorizing...
+                          </>
+                        ) : (
+                          <>Confirm &amp; Place Order <i className="bi bi-arrow-right ms-1"></i></>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // =========================================================================
+    // ORDER RECEIPT MODAL
+    // =========================================================================
+    function OrderReceiptModal({ order, onClose }) {
+      return (
+        <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.6)", zIndex: 1060 }}>
+          <div className="modal-dialog modal-dialog-centered modal-lg">
+            <div className="modal-content border-0 shadow rounded-4" id="printable-receipt">
+              <div className="modal-header bg-success text-white">
+                <h5 className="modal-title brand-font fw-bold">
+                  <i className="bi bi-patch-check-fill me-2"></i> Order Confirmed!
+                </h5>
+                <button type="button" className="btn-close btn-close-white" onClick={onClose}></button>
+              </div>
+              <div className="modal-body p-4">
+                <div className="text-center mb-4">
+                  <div className="badge bg-success bg-opacity-10 text-success p-2 rounded-circle mb-2" style={{ fontSize: "2rem" }}>
+                    <i className="bi bi-check2"></i>
+                  </div>
+                  <h4 className="fw-bold mb-1">Thank you for your order!</h4>
+                  <p className="text-muted small">
+                    Order Reference: <strong className="text-dark">#{order.orderId}</strong> &bull; Placed on {new Date(order.createdAt).toLocaleString()}
+                  </p>
+                </div>
+
+                <div className="row g-3 mb-4">
+                  <div className="col-md-6">
+                    <div className="card h-100 p-3 bg-light border-0">
+                      <h6 className="fw-bold text-muted small text-uppercase mb-2">Customer &amp; Shipping Info</h6>
+                      <div className="fw-bold">{order.customer?.name}</div>
+                      <div className="small text-muted">{order.customer?.email} | +91 {order.customer?.phone}</div>
+                      <div className="small text-dark mt-2">{order.customer?.address}</div>
+                      <div className="small text-muted">PIN: {order.customer?.pin}</div>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="card h-100 p-3 bg-light border-0">
+                      <h6 className="fw-bold text-muted small text-uppercase mb-2">Payment &amp; Fulfillment</h6>
+                      <div>Method: <strong className="text-uppercase">{order.paymentMethod}</strong></div>
+                      <div>Status: <span className="badge bg-primary">{order.status || "Placed"}</span></div>
+                      <div className="small text-muted mt-2">
+                        Estimated Delivery: <strong>3 to 5 business days</strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Items Table */}
+                <h6 className="fw-bold mb-2">Itemized Order Summary</h6>
+                <div className="table-responsive">
+                  <table className="table table-sm border align-middle mb-0">
+                    <thead className="table-light">
+                      <tr>
+                        <th>Book Title</th>
+                        <th className="text-center">Qty</th>
+                        <th className="text-end">Unit Price</th>
+                        <th className="text-end">Subtotal</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {order.items?.map((it, idx) => (
+                        <tr key={idx}>
+                          <td>{it.title}</td>
+                          <td className="text-center">{it.qty}</td>
+                          <td className="text-end">{formatINR(it.price)}</td>
+                          <td className="text-end fw-semibold">{formatINR(it.price * it.qty)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td colSpan="3" className="text-end text-muted small">Subtotal:</td>
+                        <td className="text-end fw-semibold">{formatINR(order.subtotal)}</td>
+                      </tr>
+                      {order.discount > 0 && (
+                        <tr>
+                          <td colSpan="3" className="text-end text-success small">Discount (PUSTAK10):</td>
+                          <td className="text-end text-success fw-semibold">-{formatINR(order.discount)}</td>
+                        </tr>
+                      )}
+                      <tr>
+                        <td colSpan="3" className="text-end text-muted small">Shipping:</td>
+                        <td className="text-end">{order.shipping === 0 ? "FREE" : formatINR(order.shipping)}</td>
+                      </tr>
+                      <tr className="table-light">
+                        <td colSpan="3" className="text-end fw-bold">Grand Total:</td>
+                        <td className="text-end fw-bold fs-6 brand-font text-dark">{formatINR(order.total)}</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+
+              <div className="modal-footer border-top bg-light">
+                <button type="button" className="btn btn-outline-secondary rounded-pill" onClick={() => window.print()}>
+                  <i className="bi bi-printer me-1"></i> Print Receipt
+                </button>
+                <button type="button" className="btn btn-dark rounded-pill px-4" onClick={onClose}>
+                  Done
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // =========================================================================
+    // BOOK DETAIL MODAL
+    // =========================================================================
+    function BookDetailModal({ book, onClose, onAddToCart }) {
+      return (
+        <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.6)", zIndex: 1060 }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content border-0 shadow rounded-4 overflow-hidden">
+              <div className={`p-4 text-white bg-${book.category || "General"} d-flex justify-content-between align-items-start`}>
+                <div>
+                  <span className="badge bg-dark bg-opacity-50 text-white mb-2">{book.category}</span>
+                  <h4 className="fw-bold mb-1 brand-font">{book.title}</h4>
+                  <div className="opacity-75">by {book.author}</div>
+                </div>
+                <button type="button" className="btn-close btn-close-white" onClick={onClose}></button>
+              </div>
+              <div className="modal-body p-4">
+                <div className="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
+                  <div>
+                    <span className="rating-badge me-2">
+                      <i className="bi bi-star-fill text-warning"></i> {book.rating || 4.5} / 5.0
+                    </span>
+                    <span className="small text-muted">ISBN: {book.isbn || "N/A"}</span>
+                  </div>
+                  <div className="price-tag">{formatINR(book.price)}</div>
+                </div>
+
+                <h6 className="fw-bold small text-uppercase text-muted">Synopsis &amp; Details</h6>
+                <p className="text-muted" style={{ lineHeight: "1.6" }}>
+                  {book.description || "A captivating addition to your personal library, selected for literary quality and timeless relevance."}
+                </p>
+
+                <div className="row g-2 small text-muted border-top pt-3">
+                  <div className="col-6">Published: <strong>{book.publishedYear || "Recent"}</strong></div>
+                  <div className="col-6">Availability: <strong>{book.stock > 0 ? `${book.stock} Copies in Stock` : "Backorder"}</strong></div>
+                </div>
+              </div>
+              <div className="modal-footer border-top bg-light">
+                <button type="button" className="btn btn-outline-secondary rounded-pill" onClick={onClose}>
+                  Back
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-warning rounded-pill px-4 fw-bold"
+                  onClick={() => onAddToCart(book)}
+                  disabled={book.stock <= 0}
+                >
+                  <i className="bi bi-cart-plus me-1"></i> Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // =========================================================================
+    // TRACK ORDER VIEW
+    // =========================================================================
+    function TrackOrderView({ onSelectBook }) {
+      const [orderIdInput, setOrderIdInput] = useState("");
+      const [orderData, setOrderData] = useState(null);
+      const [loading, setLoading] = useState(false);
+      const [error, setError] = useState(null);
+
+      const handleSearch = async (e) => {
+        e.preventDefault();
+        const id = orderIdInput.trim().replace("#", "");
+        if (!id) return;
+        setLoading(true);
+        setError(null);
+        setOrderData(null);
+
+        try {
+          const res = await fetch(`/api/orders/${id}`);
+          const data = await res.json();
+          if (res.ok && data.success) {
+            setOrderData(data.order);
+          } else {
+            setError(data.message || `No order found with ID #${id}`);
+          }
+        } catch (err) {
+          setError("Failed to reach server.");
+        }
+        setLoading(false);
+      };
+
+      const steps = ["Placed", "Confirmed", "Shipped", "Delivered"];
+      const getStepIndex = (status) => {
+        const idx = steps.indexOf(status);
+        return idx >= 0 ? idx : 0;
+      };
+
+      return (
+        <div className="row justify-content-center">
+          <div className="col-lg-8">
+            <div className="card shadow-sm border-0 rounded-4 p-4 mb-4">
+              <h3 className="brand-font fw-bold mb-2">Track Your Bookstore Order</h3>
+              <p className="text-muted small">
+                Enter your numeric Order ID (e.g. 1001) to verify real-time status and delivery progression.
+              </p>
+
+              <form onSubmit={handleSearch} className="input-group mb-3">
+                <span className="input-group-text bg-white">#</span>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Order ID (e.g., 1001)"
+                  value={orderIdInput}
+                  onChange={(e) => setOrderIdInput(e.target.value)}
+                />
+                <button className="btn btn-warning px-4 fw-bold" type="submit" disabled={loading}>
+                  {loading ? <span className="spinner-border spinner-border-sm"></span> : "Track Status"}
+                </button>
+              </form>
+
+              {error && <div className="alert alert-danger py-2 small">{error}</div>}
+
+              {orderData && (
+                <div className="mt-4 border-top pt-4">
+                  <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                    <div>
+                      <h5 className="fw-bold mb-0">Order #{orderData.orderId}</h5>
+                      <span className="text-muted small">Placed: {new Date(orderData.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <span className="badge bg-primary px-3 py-2 fs-6">
+                      Status: {orderData.status || "Placed"}
+                    </span>
+                  </div>
+
+                  {/* 4-Step Visual Progression */}
+                  <div className="d-flex justify-content-between mb-5 px-2">
+                    {steps.map((st, i) => {
+                      const curIdx = getStepIndex(orderData.status);
+                      const isDone = i <= curIdx;
+                      const isActive = i === curIdx;
+                      return (
+                        <div key={st} className={`track-step ${isDone ? "done" : ""} ${isActive ? "active" : ""}`}>
+                          <div className="track-circle">{i + 1}</div>
+                          <span className="small fw-semibold mt-2">{st}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Order Details */}
+                  <div className="row g-3 bg-light p-3 rounded-3">
+                    <div className="col-sm-6">
+                      <div className="text-muted small">Customer Name:</div>
+                      <strong>{orderData.customer?.name}</strong>
+                    </div>
+                    <div className="col-sm-6">
+                      <div className="text-muted small">Delivery Address:</div>
+                      <div>{orderData.customer?.address}, PIN: {orderData.customer?.pin}</div>
+                    </div>
+                    <div className="col-sm-6">
+                      <div className="text-muted small">Payment Method:</div>
+                      <div className="text-uppercase fw-semibold">{orderData.paymentMethod}</div>
+                    </div>
+                    <div className="col-sm-6">
+                      <div className="text-muted small">Total Amount:</div>
+                      <div className="fw-bold brand-font text-dark">{formatINR(orderData.total)}</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // =========================================================================
+    // ADMIN INVENTORY VIEW
+    // =========================================================================
+    function AdminInventoryView({ books, onRefresh, showToast }) {
+      const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+      const [editingBook, setEditingBook] = useState(null);
+      const [bookForm, setBookForm] = useState({
+        title: "",
+        author: "",
+        category: "Fiction",
+        price: "",
+        stock: "10",
+        rating: "4.5",
+        isbn: "",
+        description: ""
+      });
+      const [formErrors, setFormErrors] = useState({});
+      const [submitting, setSubmitting] = useState(false);
+
+      const openAddModal = () => {
+        setEditingBook(null);
+        setBookForm({
+          title: "",
+          author: "",
+          category: "Fiction",
+          price: "",
+          stock: "10",
+          rating: "4.5",
+          isbn: "",
+          description: ""
+        });
+        setFormErrors({});
+        setIsAddModalOpen(true);
+      };
+
+      const openEditModal = (book) => {
+        setEditingBook(book);
+        setBookForm({
+          title: book.title,
+          author: book.author,
+          category: book.category,
+          price: book.price,
+          stock: book.stock,
+          rating: book.rating || 4.5,
+          isbn: book.isbn || "",
+          description: book.description || ""
+        });
+        setFormErrors({});
+        setIsAddModalOpen(true);
+      };
+
+      const handleSaveBook = async (e) => {
+        e.preventDefault();
+        setSubmitting(true);
+        setFormErrors({});
+
+        const method = editingBook ? "PUT" : "POST";
+        const url = editingBook ? `/api/books/${editingBook.id}` : "/api/books";
+
+        try {
+          const res = await fetch(url, {
+            method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(bookForm),
+          });
+          const data = await res.json();
+
+          if (res.ok && data.success) {
+            setIsAddModalOpen(false);
+            onRefresh();
+            showToast(data.message);
+          } else {
+            setFormErrors(data.errors || { general: data.message });
+          }
+        } catch (err) {
+          setFormErrors({ general: "Network error saving book." });
+        }
+        setSubmitting(false);
+      };
+
+      const handleDeleteBook = async (book) => {
+        if (!confirm(`Are you sure you want to delete "${book.title}" from the catalog?`)) return;
+        try {
+          const res = await fetch(`/api/books/${book.id}`, { method: "DELETE" });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            onRefresh();
+            showToast(data.message);
+          } else {
+            alert(data.message || "Failed to delete book.");
+          }
+        } catch (err) {
+          alert("Error deleting book.");
+        }
+      };
+
+      return (
+        <div>
+          <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+              <h3 className="brand-font fw-bold mb-1">Catalog &amp; Inventory Management</h3>
+              <p className="text-muted small mb-0">
+                Manage bookstore inventory, update pricing and stock levels, or add new titles.
+              </p>
+            </div>
+            <button className="btn btn-warning rounded-pill fw-bold" onClick={openAddModal}>
+              <i className="bi bi-plus-circle me-1"></i> Add New Book
+            </button>
+          </div>
+
+          {/* Books Management Table */}
+          <div className="card shadow-sm border-0 rounded-4 overflow-hidden">
+            <div className="table-responsive">
+              <table className="table table-hover align-middle mb-0">
+                <thead className="table-light">
+                  <tr>
+                    <th>ID</th>
+                    <th>Title &amp; Author</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Rating</th>
+                    <th className="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {books.map((b) => (
+                    <tr key={b.id}>
+                      <td className="text-muted font-monospace small">#{b.id}</td>
+                      <td>
+                        <strong>{b.title}</strong>
+                        <div className="text-muted small">{b.author}</div>
+                      </td>
+                      <td>
+                        <span className="badge text-bg-secondary">{b.category}</span>
+                      </td>
+                      <td className="fw-bold">{formatINR(b.price)}</td>
+                      <td>
+                        <span className={`badge ${b.stock > 5 ? "bg-success" : "bg-warning text-dark"}`}>
+                          {b.stock} units
+                        </span>
+                      </td>
+                      <td>
+                        <span className="small text-warning">
+                          <i className="bi bi-star-fill me-1"></i>
+                          {b.rating || 4.5}
+                        </span>
+                      </td>
+                      <td className="text-end">
+                        <button
+                          className="btn btn-sm btn-outline-primary rounded-pill me-1"
+                          onClick={() => openEditModal(b)}
+                          title="Edit Book Details"
+                        >
+                          <i className="bi bi-pencil-square"></i> Edit
+                        </button>
+                        <button
+                          className="btn btn-sm btn-outline-danger rounded-pill"
+                          onClick={() => handleDeleteBook(b)}
+                          title="Delete Book"
+                        >
+                          <i className="bi bi-trash"></i> Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Add / Edit Book Modal */}
+          {isAddModalOpen && (
+            <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.6)", zIndex: 1060 }}>
+              <div className="modal-dialog modal-dialog-centered">
+                <div className="modal-content border-0 shadow rounded-4">
+                  <div className="modal-header border-bottom">
+                    <h5 className="modal-title brand-font fw-bold">
+                      {editingBook ? `Edit Book Details (#${editingBook.id})` : "Add New Book to Catalog"}
+                    </h5>
+                    <button type="button" className="btn-close" onClick={() => setIsAddModalOpen(false)}></button>
+                  </div>
+                  <form onSubmit={handleSaveBook}>
+                    <div className="modal-body p-4">
+                      {formErrors.general && (
+                        <div className="alert alert-danger py-2 small">{formErrors.general}</div>
+                      )}
+
+                      <div className="mb-3">
+                        <label className="form-label small fw-semibold">Book Title *</label>
+                        <input
+                          type="text"
+                          className={`form-control ${formErrors.title ? "is-invalid" : ""}`}
+                          placeholder="e.g. Design Patterns"
+                          value={bookForm.title}
+                          onChange={(e) => setBookForm({ ...bookForm, title: e.target.value })}
+                          required
+                        />
+                        {formErrors.title && <div className="invalid-feedback">{formErrors.title}</div>}
+                      </div>
+
+                      <div className="mb-3">
+                        <label className="form-label small fw-semibold">Author Name *</label>
+                        <input
+                          type="text"
+                          className={`form-control ${formErrors.author ? "is-invalid" : ""}`}
+                          placeholder="e.g. Erich Gamma"
+                          value={bookForm.author}
+                          onChange={(e) => setBookForm({ ...bookForm, author: e.target.value })}
+                          required
+                        />
+                        {formErrors.author && <div className="invalid-feedback">{formErrors.author}</div>}
+                      </div>
+
+                      <div className="row g-2 mb-3">
+                        <div className="col-6">
+                          <label className="form-label small fw-semibold">Category</label>
+                          <select
+                            className="form-select"
+                            value={bookForm.category}
+                            onChange={(e) => setBookForm({ ...bookForm, category: e.target.value })}
+                          >
+                            <option value="Fiction">Fiction</option>
+                            <option value="Biography">Biography</option>
+                            <option value="History">History</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Science">Science</option>
+                            <option value="Philosophy">Philosophy</option>
+                            <option value="General">General</option>
+                          </select>
+                        </div>
+                        <div className="col-6">
+                          <label className="form-label small fw-semibold">Price (INR) *</label>
+                          <input
+                            type="number"
+                            min="1"
+                            step="1"
+                            className={`form-control ${formErrors.price ? "is-invalid" : ""}`}
+                            placeholder="599"
+                            value={bookForm.price}
+                            onChange={(e) => setBookForm({ ...bookForm, price: e.target.value })}
+                            required
+                          />
+                          {formErrors.price && <div className="invalid-feedback">{formErrors.price}</div>}
+                        </div>
+                      </div>
+
+                      <div className="row g-2 mb-3">
+                        <div className="col-6">
+                          <label className="form-label small fw-semibold">Stock Quantity</label>
+                          <input
+                            type="number"
+                            min="0"
+                            className="form-control"
+                            value={bookForm.stock}
+                            onChange={(e) => setBookForm({ ...bookForm, stock: e.target.value })}
+                          />
+                        </div>
+                        <div className="col-6">
+                          <label className="form-label small fw-semibold">Rating (1.0 - 5.0)</label>
+                          <input
+                            type="number"
+                            step="0.1"
+                            min="1"
+                            max="5"
+                            className="form-control"
+                            value={bookForm.rating}
+                            onChange={(e) => setBookForm({ ...bookForm, rating: e.target.value })}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="mb-3">
+                        <label className="form-label small fw-semibold">ISBN</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="978-0201633610"
+                          value={bookForm.isbn}
+                          onChange={(e) => setBookForm({ ...bookForm, isbn: e.target.value })}
+                        />
+                      </div>
+
+                      <div className="mb-3">
+                        <label className="form-label small fw-semibold">Description</label>
+                        <textarea
+                          rows="2"
+                          className="form-control"
+                          placeholder="Brief synopsis..."
+                          value={bookForm.description}
+                          onChange={(e) => setBookForm({ ...bookForm, description: e.target.value })}
+                        ></textarea>
+                      </div>
+                    </div>
+
+                    <div className="modal-footer border-top bg-light">
+                      <button type="button" className="btn btn-outline-secondary rounded-pill" onClick={() => setIsAddModalOpen(false)}>
+                        Cancel
+                      </button>
+                      <button type="submit" className="btn btn-warning rounded-pill px-4 fw-bold" disabled={submitting}>
+                        {submitting ? "Saving..." : (editingBook ? "Update Book" : "Save Book")}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Mount to Root DOM
+    ReactDOM.createRoot(document.getElementById("root")).render(<PustakApp />);
+  </script>
+</body>
+</html>

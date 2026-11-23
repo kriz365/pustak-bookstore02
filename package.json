@@ -1,0 +1,22 @@
+{
+  "name": "pustak-bookstore",
+  "version": "1.0.0",
+  "description": "Full-Stack Bookstore with Zero-Trust Validation and Inventory Management",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node test.js",
+    "test:all": "node run_full_test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.10",
+    "express": "^4.19.2",
+    "mongoose": "^9.12.3",
+    "serverless-http": "^4.0.0"
+  }
+}
