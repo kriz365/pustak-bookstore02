@@ -32,7 +32,6 @@ The client layer is organized into modular React components leveraging modern Re
 | `<ReadingGoalAdvisor>` | `public/components/ReadingGoalAdvisor.jsx` | Interactive reading goal planner with live state calculations (`useState`, `useMemo`). |
 | `<CartDrawer>` | `public/components/CartDrawer.jsx` | Slide-out shopping cart drawer responding to atomic `cartReducer` dispatch actions. |
 | `<BookCard>` | `public/components/BookCard.jsx` | Reusable presentation card rendering book cover styling, rating, and stock triggers. |
-| `<ReactInfoModal>` | `public/components/ReactInfoModal.jsx` | Interactive examiner modal inspecting React component hierarchy, active hooks, and live state. |
 
 ### React Hooks Utilized
 - **`useReducer`**: Centralized state management for shopping cart operations, ensuring atomic predictability.
@@ -58,11 +57,10 @@ pustak-bookstore/
 │       └── api.js         # Netlify Serverless API handler
 ├── public/
 │   ├── index.html         # React 18 SPA Entrypoint & Layout
-│   └── components/        # Modular React 18 Components
+│   └── components/        # Modular React Components
 │       ├── ReadingGoalAdvisor.jsx   # Interactive Goal & Bundle Estimator
 │       ├── CartDrawer.jsx           # Offcanvas Shopping Cart
-│       ├── BookCard.jsx             # Reusable Book Presentation Card
-│       └── ReactInfoModal.jsx       # Architecture & Hooks Inspector Modal
+│       └── BookCard.jsx             # Reusable Book Presentation Card
 ├── routes/
 │   └── api.js             # RESTful API router (Books, Checkout, Orders)
 ├── validators/
