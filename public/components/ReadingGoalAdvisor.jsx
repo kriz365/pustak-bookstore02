@@ -1,12 +1,11 @@
 /**
  * ReadingGoalAdvisor.jsx
- * Pustak Bookstore — Interactive React 18 Component
+ * Pustak Bookstore — Smart Reading Goal & Bundle Estimator Component
  *
- * Demonstrates:
- * - Reactive state with `useState`
- * - Performance-optimized dynamic recalculation with `useMemo`
- * - Inter-component event dispatch to parent cart reducer via props
- * - Live React state inspection for academic demonstration
+ * Provides:
+ * - Dynamic reading pace and hour calculations
+ * - Filtered book recommendations based on genre preference
+ * - Bundle savings calculation with 1-click cart addition
  */
 
 import React, { useState, useMemo } from "react";
@@ -15,7 +14,6 @@ export function ReadingGoalAdvisor({ books = [], onAddToCart, onQuickView }) {
   const [dailyMinutes, setDailyMinutes] = useState(30);
   const [selectedGenre, setSelectedGenre] = useState("All");
   const [targetBooksCount, setTargetBooksCount] = useState(2);
-  const [showStateInspector, setShowStateInspector] = useState(false);
 
   // Dynamic calculations via useMemo
   const metrics = useMemo(() => {
@@ -67,60 +65,21 @@ export function ReadingGoalAdvisor({ books = [], onAddToCart, onQuickView }) {
   return (
     <div className="card shadow-sm border-0 mb-4 bg-white rounded-4 overflow-hidden border-start border-4 border-warning">
       <div className="card-body p-4">
-        {/* Header with React Badge */}
+        {/* Header */}
         <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3 pb-2 border-bottom">
           <div className="d-flex align-items-center gap-2">
-            <span className="badge bg-dark text-warning p-2 rounded-3 fs-6">
-              <i className="bi bi-atom me-1"></i> React 18 Component
+            <span className="badge bg-warning text-dark p-2 rounded-3 fs-6">
+              <i className="bi bi-compass me-1"></i> Reading Planner
             </span>
             <h5 className="mb-0 fw-bold brand-font text-dark">
-              Smart Reading Goal & Bundle Estimator
+              Smart Reading Goal &amp; Bundle Estimator
             </h5>
           </div>
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-secondary rounded-pill px-3"
-            onClick={() => setShowStateInspector(!showStateInspector)}
-            title="Inspect live React hook state"
-          >
-            <i className="bi bi-code-slash me-1"></i>
-            {showStateInspector ? "Hide State" : "Inspect React State"}
-          </button>
         </div>
 
         <p className="text-muted small mb-4">
-          Calculates your reading pace, personalized book recommendations, and budget savings in real-time using React <code>useState</code> and <code>useMemo</code> hooks without full page reloads.
+          Personalized reading pace calculations, curated book recommendations, and bundle discounts tailored to your goals.
         </p>
-
-        {/* Live State Inspector Panel */}
-        {showStateInspector && (
-          <div className="bg-dark text-light p-3 rounded-3 mb-4 font-monospace small">
-            <div className="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom border-secondary">
-              <span className="text-warning fw-bold">⚛️ Live React Component State Snapshot:</span>
-              <span className="badge bg-success">Reactive Virtual DOM</span>
-            </div>
-            <pre className="mb-0 text-info" style={{ maxHeight: "160px", overflowY: "auto" }}>
-              {JSON.stringify(
-                {
-                  component: "ReadingGoalAdvisor",
-                  hookState: {
-                    dailyMinutes,
-                    selectedGenre,
-                    targetBooksCount,
-                    monthlyHours: metrics.monthlyHours,
-                    estPages: metrics.estPages,
-                    readingPersona: metrics.persona,
-                    estimatedCostINR: metrics.estimatedCost,
-                    couponSavingsINR: metrics.estimatedSavings,
-                    recommendedBook: metrics.topRecommendation?.title || "None"
-                  }
-                },
-                null,
-                2
-              )}
-            </pre>
-          </div>
-        )}
 
         <div className="row g-4 align-items-center">
           {/* Controls Column */}
@@ -225,7 +184,7 @@ export function ReadingGoalAdvisor({ books = [], onAddToCart, onQuickView }) {
             <div className="p-3 bg-light rounded-4 border">
               <div className="d-flex align-items-center justify-content-between mb-2">
                 <span className="badge bg-warning text-dark fw-bold">
-                  <i className="bi bi-stars me-1"></i> React AI Pick
+                  <i className="bi bi-stars me-1"></i> Curated Pick
                 </span>
                 <span className="text-muted small">
                   {metrics.availableInGenre} books in {selectedGenre}
