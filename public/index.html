@@ -330,6 +330,38 @@
       to { transform: translateY(0); opacity: 1; }
     }
 
+    /* React 18 Badge & Animations */
+    .react-badge-btn {
+      background: rgba(0, 216, 255, 0.12);
+      border: 1px solid rgba(0, 216, 255, 0.4);
+      color: #00d8ff;
+      border-radius: 999px;
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .react-badge-btn:hover {
+      background: rgba(0, 216, 255, 0.22);
+      border-color: #00d8ff;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+    .react-pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #00d8ff;
+      box-shadow: 0 0 0 0 rgba(0, 216, 255, 0.7);
+      animation: reactPulse 1.8s infinite;
+      display: inline-block;
+    }
+    @keyframes reactPulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 216, 255, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(0, 216, 255, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 216, 255, 0); }
+    }
+
     /* Print styles */
     @media print {
       body * { visibility: hidden; }
@@ -395,6 +427,423 @@
     }
 
     // =========================================================================
+    // REACT 18 COMPONENT: SMART READING GOAL & BUNDLE ESTIMATOR
+    // =========================================================================
+    function ReadingGoalAdvisor({ books = [], onAddToCart, onQuickView }) {
+      const [dailyMinutes, setDailyMinutes] = useState(30);
+      const [selectedGenre, setSelectedGenre] = useState("All");
+      const [targetBooksCount, setTargetBooksCount] = useState(2);
+      const [showStateInspector, setShowStateInspector] = useState(false);
+
+      // Reactive calculations using useMemo
+      const metrics = useMemo(() => {
+        const monthlyHours = (dailyMinutes * 30) / 60;
+        const estPages = Math.round(dailyMinutes * 30 * 0.8);
+
+        let persona = "Casual Reader";
+        let personaIcon = "bi-cup-hot";
+        if (dailyMinutes >= 60) {
+          persona = "Master Polymath";
+          personaIcon = "bi-mortarboard-fill";
+        } else if (dailyMinutes >= 45) {
+          persona = "Deep Thinker";
+          personaIcon = "bi-lightning-charge-fill";
+        } else if (dailyMinutes >= 30) {
+          persona = "Steady Scholar";
+          personaIcon = "bi-book-half";
+        }
+
+        const genreFiltered = selectedGenre === "All"
+          ? books
+          : books.filter((b) => (b.category || "").toLowerCase() === selectedGenre.toLowerCase());
+
+        const sortedByRating = [...genreFiltered].sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        const topRecommendation = sortedByRating[0] || books[0] || null;
+
+        const avgPrice = genreFiltered.length > 0
+          ? Math.round(genreFiltered.reduce((sum, b) => sum + (b.price || 0), 0) / genreFiltered.length)
+          : 499;
+
+        const estimatedCost = avgPrice * targetBooksCount;
+        const estimatedSavings = Math.round(estimatedCost * 0.1);
+
+        return {
+          monthlyHours: monthlyHours.toFixed(1),
+          estPages,
+          persona,
+          personaIcon,
+          topRecommendation,
+          estimatedCost,
+          estimatedSavings,
+          availableInGenre: genreFiltered.length
+        };
+      }, [dailyMinutes, selectedGenre, targetBooksCount, books]);
+
+      return (
+        <div className="card shadow-sm border-0 mb-4 bg-white rounded-4 overflow-hidden border-start border-4 border-warning">
+          <div className="card-body p-4">
+            <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3 pb-2 border-bottom">
+              <div className="d-flex align-items-center gap-2">
+                <span className="badge bg-dark text-warning p-2 rounded-3 fs-6">
+                  <i className="bi bi-atom me-1"></i> React 18 Component
+                </span>
+                <h5 className="mb-0 fw-bold brand-font text-dark">
+                  Smart Reading Goal &amp; Bundle Estimator
+                </h5>
+              </div>
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                onClick={() => setShowStateInspector(!showStateInspector)}
+                title="Inspect live React hook state"
+              >
+                <i className="bi bi-code-slash me-1"></i>
+                {showStateInspector ? "Hide State" : "Inspect React State"}
+              </button>
+            </div>
+
+            <p className="text-muted small mb-4">
+              Calculates reading pace, personalized book recommendations, and budget savings in real-time using React <code>useState</code> and <code>useMemo</code> hooks without full page reloads.
+            </p>
+
+            {showStateInspector && (
+              <div className="bg-dark text-light p-3 rounded-3 mb-4 font-monospace small">
+                <div className="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom border-secondary">
+                  <span className="text-warning fw-bold">⚛️ Live React Component State Snapshot:</span>
+                  <span className="badge bg-success">Reactive Virtual DOM</span>
+                </div>
+                <pre className="mb-0 text-info" style={{ maxHeight: "160px", overflowY: "auto" }}>
+                  {JSON.stringify(
+                    {
+                      component: "ReadingGoalAdvisor",
+                      hookState: {
+                        dailyMinutes,
+                        selectedGenre,
+                        targetBooksCount,
+                        monthlyHours: metrics.monthlyHours,
+                        estPages: metrics.estPages,
+                        readingPersona: metrics.persona,
+                        estimatedCostINR: metrics.estimatedCost,
+                        couponSavingsINR: metrics.estimatedSavings,
+                        recommendedBook: metrics.topRecommendation ? metrics.topRecommendation.title : "None"
+                      }
+                    },
+                    null,
+                    2
+                  )}
+                </pre>
+              </div>
+            )}
+
+            <div className="row g-4 align-items-center">
+              <div className="col-lg-7">
+                <div className="mb-3">
+                  <label className="form-label small fw-bold text-dark d-flex justify-content-between">
+                    <span>1. Daily Reading Commitment:</span>
+                    <span className="text-warning fw-bold">{dailyMinutes} mins / day</span>
+                  </label>
+                  <div className="d-flex gap-2 flex-wrap">
+                    {[15, 30, 45, 60].map((mins) => (
+                      <button
+                        key={mins}
+                        type="button"
+                        className={`btn btn-sm rounded-pill px-3 ${
+                          dailyMinutes === mins
+                            ? "btn-dark fw-bold text-warning"
+                            : "btn-outline-secondary"
+                        }`}
+                        onClick={() => setDailyMinutes(mins)}
+                      >
+                        <i className="bi bi-clock me-1"></i> {mins} mins
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label small fw-bold text-dark">
+                    2. Preferred Literary Genre:
+                  </label>
+                  <div className="d-flex gap-2 flex-wrap">
+                    {["All", "Fiction", "Technology", "History", "Biography", "Science"].map((genre) => (
+                      <button
+                        key={genre}
+                        type="button"
+                        className={`btn btn-sm rounded-pill px-3 ${
+                          selectedGenre === genre
+                            ? "btn-warning fw-bold text-dark"
+                            : "btn-outline-secondary"
+                        }`}
+                        onClick={() => setSelectedGenre(genre)}
+                      >
+                        {genre}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label small fw-bold text-dark d-flex justify-content-between">
+                    <span>3. Target Books This Month:</span>
+                    <span className="text-primary fw-bold">{targetBooksCount} books</span>
+                  </label>
+                  <div className="d-flex align-items-center gap-3">
+                    <input
+                      type="range"
+                      className="form-range"
+                      min="1"
+                      max="5"
+                      step="1"
+                      value={targetBooksCount}
+                      onChange={(e) => setTargetBooksCount(Number(e.target.value))}
+                    />
+                    <span className="badge bg-light text-dark border px-3 py-2 fs-6">
+                      {targetBooksCount} / mo
+                    </span>
+                  </div>
+                </div>
+
+                <div className="row g-2 mt-2">
+                  <div className="col-4">
+                    <div className="p-2 border rounded-3 bg-light text-center">
+                      <div className="text-muted small">Monthly Time</div>
+                      <div className="fw-bold text-dark">{metrics.monthlyHours} hrs</div>
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="p-2 border rounded-3 bg-light text-center">
+                      <div className="text-muted small">Est. Pages</div>
+                      <div className="fw-bold text-dark">~{metrics.estPages}</div>
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="p-2 border rounded-3 bg-light text-center">
+                      <div className="text-muted small">Your Persona</div>
+                      <div className="fw-bold text-warning text-truncate">
+                        <i className={`bi ${metrics.personaIcon} me-1`}></i>
+                        {metrics.persona}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-lg-5">
+                <div className="p-3 bg-light rounded-4 border">
+                  <div className="d-flex align-items-center justify-content-between mb-2">
+                    <span className="badge bg-warning text-dark fw-bold">
+                      <i className="bi bi-stars me-1"></i> React AI Pick
+                    </span>
+                    <span className="text-muted small">
+                      {metrics.availableInGenre} books in {selectedGenre}
+                    </span>
+                  </div>
+
+                  {metrics.topRecommendation ? (
+                    <div className="card border-0 bg-white shadow-sm p-3 rounded-3 mb-3">
+                      <div className="d-flex gap-3 align-items-center">
+                        <div
+                          className={`book-cover bg-${metrics.topRecommendation.category || "General"} d-flex align-items-center justify-content-center text-white rounded p-2`}
+                          style={{ width: "65px", height: "85px", fontSize: "0.7rem", textAlign: "center" }}
+                        >
+                          <span className="fw-bold">{metrics.topRecommendation.title.substring(0, 18)}...</span>
+                        </div>
+                        <div className="flex-grow-1">
+                          <div className="fw-bold text-dark text-truncate" style={{ maxWidth: "180px" }}>
+                            {metrics.topRecommendation.title}
+                          </div>
+                          <div className="text-muted small">by {metrics.topRecommendation.author}</div>
+                          <div className="d-flex align-items-center gap-2 mt-1">
+                            <span className="fw-bold text-dark">₹{metrics.topRecommendation.price}</span>
+                            <span className="rating-badge small">
+                              <i className="bi bi-star-fill text-warning"></i> {metrics.topRecommendation.rating || 4.5}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="d-flex gap-2 mt-3 pt-2 border-top">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-secondary rounded-pill flex-fill"
+                          onClick={() => onQuickView && onQuickView(metrics.topRecommendation)}
+                        >
+                          <i className="bi bi-eye me-1"></i> Preview
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-warning rounded-pill fw-bold flex-fill"
+                          onClick={() => onAddToCart && onAddToCart(metrics.topRecommendation)}
+                          disabled={metrics.topRecommendation.stock <= 0}
+                        >
+                          <i className="bi bi-cart-plus me-1"></i> Add to Cart
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-3 text-muted small">
+                      No books found in this genre.
+                    </div>
+                  )}
+
+                  <div className="p-2 px-3 bg-white rounded-3 border d-flex justify-content-between align-items-center small">
+                    <div>
+                      <span className="text-muted">Est. Bundle ({targetBooksCount} bks):</span>
+                      <span className="fw-bold text-dark ms-2">₹{metrics.estimatedCost}</span>
+                    </div>
+                    <div className="text-success fw-bold">
+                      <i className="bi bi-tag-fill me-1"></i> Save ₹{metrics.estimatedSavings} (10%)
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // =========================================================================
+    // REACT 18 COMPONENT: ARCHITECTURE INSPECTOR MODAL
+    // =========================================================================
+    function ReactInfoModal({ isOpen, onClose, cartCount = 0, booksCount = 0 }) {
+      if (!isOpen) return null;
+
+      return (
+        <div
+          className="modal fade show d-block"
+          style={{ backgroundColor: "rgba(13, 35, 40, 0.75)", zIndex: 1060 }}
+          tabIndex="-1"
+        >
+          <div className="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div className="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
+              <div className="modal-header bg-dark text-white border-bottom border-warning border-3 p-4">
+                <div className="d-flex align-items-center gap-3">
+                  <span className="badge bg-warning text-dark p-2 rounded-3 fs-5">
+                    <i className="bi bi-atom"></i>
+                  </span>
+                  <div>
+                    <h5 className="modal-title fw-bold mb-0 brand-font">
+                      React 18 Single-Page Application (SPA) Architecture
+                    </h5>
+                    <p className="text-warning-emphasis small mb-0">
+                      Pustak Client Architecture &amp; State Management Overview
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="btn-close btn-close-white"
+                  onClick={onClose}
+                  aria-label="Close"
+                ></button>
+              </div>
+
+              <div className="modal-body p-4 bg-light">
+                <div className="row g-3 mb-4">
+                  <div className="col-sm-4">
+                    <div className="card border-0 bg-white shadow-sm p-3 rounded-3 text-center">
+                      <div className="text-muted small">Rendering Engine</div>
+                      <div className="fw-bold text-dark fs-6 mt-1">
+                        <i className="bi bi-cpu text-warning me-1"></i> React 18.3 Virtual DOM
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-sm-4">
+                    <div className="card border-0 bg-white shadow-sm p-3 rounded-3 text-center">
+                      <div className="text-muted small">Active Cart Items</div>
+                      <div className="fw-bold text-warning fs-6 mt-1">
+                        <i className="bi bi-bag-check text-warning me-1"></i> {cartCount} items (useReducer)
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-sm-4">
+                    <div className="card border-0 bg-white shadow-sm p-3 rounded-3 text-center">
+                      <div className="text-muted small">Catalog State</div>
+                      <div className="fw-bold text-success fs-6 mt-1">
+                        <i className="bi bi-check-circle text-success me-1"></i> {booksCount} Books Cached
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <h6 className="fw-bold text-dark mb-3">
+                  <i className="bi bi-lightning-charge-fill text-warning me-1"></i> React Hooks Utilized
+                </h6>
+                <div className="list-group mb-4 shadow-sm border-0 rounded-3">
+                  <div className="list-group-item p-3 border-0 border-bottom">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <strong className="text-dark"><code>useReducer</code> — Centralized Cart State</strong>
+                      <span className="badge bg-primary">Atomic Reducer</span>
+                    </div>
+                    <p className="text-muted small mb-0 mt-1">
+                      Replaces fragmented state with atomic actions: <code>ADD_ITEM</code>, <code>INCREMENT</code>, <code>DECREMENT</code>, <code>REMOVE</code>, and <code>CLEAR</code>.
+                    </p>
+                  </div>
+
+                  <div className="list-group-item p-3 border-0 border-bottom">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <strong className="text-dark"><code>useState</code> — Reactive UI State</strong>
+                      <span className="badge bg-secondary">Component State</span>
+                    </div>
+                    <p className="text-muted small mb-0 mt-1">
+                      Drives live search inputs, category chip active states, sorting dropdowns, modal visibility toggles, and form field validation.
+                    </p>
+                  </div>
+
+                  <div className="list-group-item p-3 border-0 border-bottom">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <strong className="text-dark"><code>useMemo</code> — Calculated Values</strong>
+                      <span className="badge bg-success">Performance</span>
+                    </div>
+                    <p className="text-muted small mb-0 mt-1">
+                      Caches subtotal sums, 10% coupon discount logic, conditional delivery fees, grand totals, and reading metrics.
+                    </p>
+                  </div>
+
+                  <div className="list-group-item p-3 border-0">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <strong className="text-dark"><code>useEffect</code> &amp; <code>useCallback</code> — REST Sync</strong>
+                      <span className="badge bg-info text-dark">Data Fetching</span>
+                    </div>
+                    <p className="text-muted small mb-0 mt-1">
+                      Debounces search and filter queries by 200ms before dispatching asynchronous HTTP fetch requests to <code>/api/books</code>.
+                    </p>
+                  </div>
+                </div>
+
+                <h6 className="fw-bold text-dark mb-3">
+                  <i className="bi bi-diagram-3-fill text-warning me-1"></i> Component Hierarchy
+                </h6>
+                <div className="bg-white p-3 rounded-3 shadow-sm font-monospace small border">
+                  <div className="text-primary fw-bold">&lt;PustakApp&gt; (Root State Container)</div>
+                  <div className="ps-3 text-secondary">├── &lt;HeaderNavbar /&gt; (Brand Logo, Tab Switcher, React 18 Badge, Cart Button)</div>
+                  <div className="ps-3 text-secondary">├── &lt;HeroBanner /&gt; (Tactile 3D Shelf Spines Display)</div>
+                  <div className="ps-3 text-success fw-semibold">├── &lt;ReadingGoalAdvisor /&gt; (Interactive Goal Planner &amp; Bundle Estimator)</div>
+                  <div className="ps-3 text-secondary">├── &lt;BookCatalogGrid /&gt; (Search Input, Filter Chips, Dynamic BookCards)</div>
+                  <div className="ps-3 text-secondary">├── &lt;CartOffcanvas /&gt; (useReducer Drawer, Coupon Input, Checkout Trigger)</div>
+                  <div className="ps-3 text-secondary">├── &lt;CheckoutModal /&gt; (Zero-Trust Validation &amp; Order Submission)</div>
+                  <div className="ps-3 text-secondary">├── &lt;TrackOrderView /&gt; (Real-time Timeline Stepper)</div>
+                  <div className="ps-3 text-secondary">└── &lt;AdminInventoryView /&gt; (REST CRUD Operations Modal)</div>
+                </div>
+              </div>
+
+              <div className="modal-footer border-top bg-white p-3">
+                <button
+                  type="button"
+                  className="btn btn-warning rounded-pill px-4 fw-bold"
+                  onClick={onClose}
+                >
+                  Understood
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // =========================================================================
     // MAIN APP COMPONENT
     // =========================================================================
     function PustakApp() {
@@ -415,6 +864,9 @@
       const [cartBump, setCartBump] = useState(false);
       const [couponCode, setCouponCode] = useState("");
       const [couponApplied, setCouponApplied] = useState(false);
+
+      // React Architecture Inspector Modal
+      const [isReactInfoOpen, setIsReactInfoOpen] = useState(false);
 
       // Modals
       const [selectedBookForModal, setSelectedBookForModal] = useState(null);
@@ -505,16 +957,30 @@
                 </button>
               </nav>
 
-              {/* Cart Button */}
-              <button
-                className={`cart-btn d-flex align-items-center ${cartBump ? "bump" : ""}`}
-                onClick={() => setIsCartOpen(true)}
-                aria-label={`Open shopping cart with ${cartCount} items`}
-              >
-                <i className="bi bi-bag-fill me-1"></i>
-                <span>Cart</span>
-                <span className="cart-badge">{cartCount}</span>
-              </button>
+              {/* Action Buttons: React 18 Badge & Shopping Cart */}
+              <div className="d-flex align-items-center gap-2">
+                <button
+                  type="button"
+                  className="react-badge-btn d-flex align-items-center gap-2"
+                  onClick={() => setIsReactInfoOpen(true)}
+                  title="View React 18 Architecture, Hooks & Component Hierarchy"
+                >
+                  <span className="react-pulse-dot"></span>
+                  <i className="bi bi-atom fs-5"></i>
+                  <span className="d-none d-sm-inline fw-semibold small">React 18 SPA</span>
+                </button>
+
+                {/* Cart Button */}
+                <button
+                  className={`cart-btn d-flex align-items-center ${cartBump ? "bump" : ""}`}
+                  onClick={() => setIsCartOpen(true)}
+                  aria-label={`Open shopping cart with ${cartCount} items`}
+                >
+                  <i className="bi bi-bag-fill me-1"></i>
+                  <span>Cart</span>
+                  <span className="cart-badge">{cartCount}</span>
+                </button>
+              </div>
             </div>
           </header>
 
@@ -562,6 +1028,15 @@
                   </div>
                 </div>
               </section>
+
+              {/* Interactive React 18 Component: Smart Reading Goal & Bundle Estimator */}
+              <div className="container pt-4">
+                <ReadingGoalAdvisor
+                  books={books}
+                  onAddToCart={handleAddToCart}
+                  onQuickView={setSelectedBookForModal}
+                />
+              </div>
 
               {/* Filter and Catalog Section */}
               <main id="catalog-section" className="container py-4 flex-grow-1">
@@ -730,13 +1205,24 @@
               <div className="row align-items-center">
                 <div className="col-md-6 text-md-start mb-2 mb-md-0">
                   <strong>Pustak</strong> &bull; Online Bookstore &copy; {new Date().getFullYear()}
+                  <span className="badge bg-dark text-warning ms-2 font-monospace">
+                    <i className="bi bi-atom me-1"></i> React 18 SPA
+                  </span>
                 </div>
                 <div className="col-md-6 text-md-end">
-                  <span>Delivering inspiring books and literature across India</span>
+                  <span>Engineered with React 18 (Hooks, useReducer, Virtual DOM) &bull; Node.js Express &bull; MongoDB</span>
                 </div>
               </div>
             </div>
           </footer>
+
+          {/* REACT 18 ARCHITECTURE INSPECTOR MODAL */}
+          <ReactInfoModal
+            isOpen={isReactInfoOpen}
+            onClose={() => setIsReactInfoOpen(false)}
+            cartCount={cartCount}
+            booksCount={books.length}
+          />
 
           {/* OFFCANVAS CART DRAWER */}
           <CartOffcanvas
